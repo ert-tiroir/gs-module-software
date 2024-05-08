@@ -1,5 +1,6 @@
 #pragma once
 
+#include <pthread.h>
 #include "av-core/module.h"
 #include "av-core/logger.h"
 #include "av-core/transceiver.h"
