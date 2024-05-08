@@ -1,6 +1,5 @@
-
+#pragma once
 #include <string>
-
 
 int read_all (int fd, char* buffer, int size);
 int read_all_or_nothing (int fd, char* buffer, int size);

@@ -14,6 +14,7 @@ private:
     void start ();
     void close ();
 public:
+    CoreTarget () = default;
     CoreTarget (const char* path_module_output, const char* path_module_input, const char* path_logger);
 
     bool ready ();

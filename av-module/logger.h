@@ -1,19 +1,13 @@
 #pragma once
 #include "av-module/core.h"
-
-enum LogLevel {
-    DEBUG   = 0,
-    INFO    = 1,
-    SUCCESS = 2,
-    WARNING = 3,
-    ERROR   = 4
-};
+#include "utils/consts.h"
 
 struct ModuleLogger {
 private:
     CoreTarget* core;
     std::string string = "";
 public:
+    ModuleLogger () = default;
     ModuleLogger (CoreTarget* core);
 
     void append (std::string &buffer);

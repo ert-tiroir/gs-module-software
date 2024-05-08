@@ -2,6 +2,8 @@
 
 #include "av-core/module.h"
 #include "av-core/logger.h"
+#include "av-core/transceiver.h"
+#include "av-core/physical.h"
 #include <vector>
 
 struct CoreContext {

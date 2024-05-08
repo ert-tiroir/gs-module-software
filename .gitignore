@@ -2,3 +2,8 @@ out
 out2
 test_core.cpp
 test_module.cpp
+
+AV_Core
+AV_Core_Logs
+AV_Core_RX_Radio_Logs
+AV_Core_TX_Radio_Logs

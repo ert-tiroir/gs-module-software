@@ -9,21 +9,19 @@ ModuleLogger::ModuleLogger (CoreTarget* core) {
 }
 
 void ModuleLogger::append (std::string &buffer) {
-    std::cout << buffer << "\n";
     this->string += buffer;
 }
 void ModuleLogger::append (const char* buffer, int size) {
-    std::cout << buffer << " " << size << "\n";
     std::string str(size, '.');
-    std::cout << str << "\n";
     for (int i = 0; i < size; i ++) str[i] = buffer[i];
-    std::cout << str << "\n";
 
     append(str);
 }
 
 void ModuleLogger::flush (LogLevel level) {
-    core->write_string_logger(this->string);
+    std::string str_level(1, (int) level);
+    std::string final_string = str_level + this->string;
+    core->write_string_logger(final_string);
     this->string = "";
 }
 

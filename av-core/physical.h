@@ -1,28 +1,26 @@
 #pragma once
 
-#include "av-module/logger.h"
 #include "av-core/context.h"
+#include "av-module/logger.h"
+#include "communication/buffer.h"
 
-struct CoreLogger {
+struct CorePhysical {
 private:
     CoreContext* context;
     CoreTarget   target;
     ModuleLogger logger;
 
-    FILE* logFile;
-
-    std::string transceiver_send_buffer;
-
-    LogLevel storeLogLevel = LogLevel::INFO;
-    LogLevel transLogLevel = LogLevel::SUCCESS;
+    buffer_t* tx_buffer;
+    buffer_t* rx_buffer;
 
     void tick ();
     void run ();
 public:
-    CoreLogger (CoreContext* context);
+    CorePhysical (CoreContext* context, buffer_t* tx_buffer, buffer_t* rx_buffer);
 
     pthread_t start ();
 
     static void* run_thread (void * context);
 };
+
 
