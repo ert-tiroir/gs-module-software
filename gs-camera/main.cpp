@@ -37,7 +37,7 @@ int main () {
         fflush(cameraResult);
     }
 
-    target.write_string_logger(stopString);
+    target.write_string_to_core(stopString);
     logger << "Sent stop message" << LogLevel::INFO;
 
     while (1) {
