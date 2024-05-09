@@ -79,6 +79,11 @@ void CoreLogger::tick () {
             transceiver_send_buffer.append(result_string);
         }
     }
+
+    bool found = false;
+    std::string result = target.read_string_from_core(&found);
+    if (!found) return ;
+    printf("%s", result.c_str());
 }
 void CoreLogger::run () {
     this->logger << "Joined Logger Thread" << LogLevel::SUCCESS;
