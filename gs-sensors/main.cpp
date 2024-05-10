@@ -11,26 +11,14 @@ const char* PATH_SENSORS__logger        = "/tmp/sensors-module-logger";
 
 const char* PATH_SENSORS_result = "GS_Sensor_Received_Data";
 
-int main () {
-    CoreTarget target(
-        PATH_SENSORS__module_output,
-        PATH_SENSORS__module_input,
-        PATH_SENSORS__logger
-    );
-    ModuleLogger logger (&target);
+FILE* sensorsResult;
 
-    logger << "Successfully opened sensors logger" << LogLevel::SUCCESS;
+void parse (ModuleLogger &logger, char* data, int size) {
+    if (size == 0) return ;
 
-    FILE* sensorsResult = fopen( PATH_SENSORS_result, "w" );
-
-    while (1) {
-        bool found;
-        std::string str = target.read_string_from_core(&found);
-        if (!found) continue ;
-
-        if (str[0] == 1) {
-            float* values = (float*) (str.data() + 9);
-            long long* tv = (long long*) (str.data() + 1);
+    if (data[0] == 1 && size >= 21) {
+            float* values = (float*) (data + 9);
+            long long* tv = (long long*) (data + 1);
         
             float temperature = values[0]; std::string str_temperature = std::to_string(temperature); 
             float pressure    = values[1]; std::string str_pressure    = std::to_string(pressure);
@@ -46,6 +34,28 @@ int main () {
             fprintf(sensorsResult, "Pressure P='%f hPa'\n", pressure);
             fprintf(sensorsResult, "Altitude h='%f m'\n", altitude);
             fflush(sensorsResult);
-        }
+
+        parse(logger, data + 21, size - 21);
+    }
+}
+
+int main () {
+    CoreTarget target(
+        PATH_SENSORS__module_output,
+        PATH_SENSORS__module_input,
+        PATH_SENSORS__logger
+    );
+    ModuleLogger logger (&target);
+
+    logger << "Successfully opened sensors logger" << LogLevel::SUCCESS;
+
+    sensorsResult = fopen( PATH_SENSORS_result, "w" );
+
+    while (1) {
+        bool found;
+        std::string str = target.read_string_from_core(&found);
+        if (!found) continue ;
+
+        parse(logger, str.data(), str.size());
     }
 }
