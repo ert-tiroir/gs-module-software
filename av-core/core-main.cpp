@@ -8,6 +8,10 @@ const char* PATH_CAMERA__module_output = "/tmp/camera-module-output";
 const char* PATH_CAMERA__module_input  = "/tmp/camera-module-input";
 const char* PATH_CAMERA__logger        = "/tmp/camera-module-logger";
 
+const char* PATH_SENSORS__module_output = "/tmp/sensors-module-output";
+const char* PATH_SENSORS__module_input  = "/tmp/sensors-module-input";
+const char* PATH_SENSORS__logger        = "/tmp/sensors-module-logger";
+
 void set_priority (pthread_t id, int prio) {
     sched_param sch;
     int policy;
@@ -31,6 +35,12 @@ int main () {
         PATH_CAMERA__module_output,
         PATH_CAMERA__module_input,
         PATH_CAMERA__logger
+    );
+    context.register_module(
+        "GS SEN",
+        PATH_SENSORS__module_output,
+        PATH_SENSORS__module_input,
+        PATH_SENSORS__logger
     );
 
     pthread_t logger_id = logger     .start(); set_priority(logger_id, 98);
