@@ -41,7 +41,7 @@ int main () {
             logger << "Pressure P='" << str_pressure << "hPa'" << LogLevel::INFO;
             logger << "Atltiude h='" << str_altitude << "m'" << LogLevel::INFO;
 
-            fprintf(sensorsResult, "Telemetry from time t='%lld ms'", tv[0]);
+            fprintf(sensorsResult, "Telemetry from time t='%lld ms'\n", tv[0]);
             fprintf(sensorsResult, "Temperature T='%f *C'\n", temperature);
             fprintf(sensorsResult, "Pressure P='%f hPa'\n", pressure);
             fprintf(sensorsResult, "Altitude h='%f m'\n", altitude);
