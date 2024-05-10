@@ -15,9 +15,12 @@ async def sock_recvall (reader, size):
 async def handle_client_recv(reader, writer):
     loop = asyncio.get_event_loop()
 
+    writer.gss_client_uuid = -1
+
     request = None
     while request != 'quit':
         request = await reader.read(1)
+        print(request)
         if writer.gss_client_uuid == -1:
             writer.gss_client_uuid = request[0]
             print("CLIENT UUID IS ", request[0])
@@ -52,30 +55,22 @@ async def handle_websocket (ws):
         tar = int(tar)
 
         client = clients[tar]
-        print(bytes([ len(str) ]) + bytes(str, encoding="utf-8"))
         if client is None:
             await ws.send("ERROR: Client is none")
             continue
-
-        loop.create_task(
-            client.sock_sendall(bytes([ len(str) ]) + bytes(str))
-        )
-        print(message)
-
+        
+        client.write(bytes([ len(str) ]) + bytes(str, encoding="utf-8"))
+        
 async def run_server_socket ():
-    print("Running")
     async with serve(handle_websocket, "localhost", 8765):
-        print("Created WebSocket server")
         await asyncio.Future()
 
 async def run ():
     loop = asyncio.get_event_loop()
 
-    print("Hello")
-    #loop.create_task(run_server_socket())
+    loop.create_task(run_server_socket())
     loop.create_task(run_server())
 
     await asyncio.Future()
 
-print("Hi !")
 asyncio.run(run())
