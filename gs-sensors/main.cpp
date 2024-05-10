@@ -9,7 +9,7 @@ const char* PATH_SENSORS__module_output = "/tmp/sensors-module-output";
 const char* PATH_SENSORS__module_input  = "/tmp/sensors-module-input";
 const char* PATH_SENSORS__logger        = "/tmp/sensors-module-logger";
 
-const char* PATH_SENSORS_result = "GS_Camera_Received_Data";
+const char* PATH_SENSORS_result = "GS_Sensor_Received_Data";
 
 int main () {
     CoreTarget target(
