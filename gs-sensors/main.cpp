@@ -15,29 +15,36 @@ const char* PATH_SENSORS_result = "GS_Sensor_Received_Data";
 
 FILE* sensorsResult;
 
-void parse (ModuleLogger &logger, char* data, int size) {
+void parse (socket_t &socket, ModuleLogger &logger, char* data, int size) {
     if (size == 0) return ;
 
     if (data[0] == 1 && size >= 21) {
-            float* values = (float*) (data + 9);
-            long long* tv = (long long*) (data + 1);
-        
-            float temperature = values[0]; std::string str_temperature = std::to_string(temperature); 
-            float pressure    = values[1]; std::string str_pressure    = std::to_string(pressure);
-            float altitude    = values[2]; std::string str_altitude    = std::to_string(altitude);
+        float* values = (float*) (data + 9);
+        long long* tv = (long long*) (data + 1);
+    
+        float temperature = values[0]; std::string str_temperature = std::to_string(temperature); 
+        float pressure    = values[1]; std::string str_pressure    = std::to_string(pressure);
+        float altitude    = values[2]; std::string str_altitude    = std::to_string(altitude);
 
-            logger << "Telemetry from t='" << tv[0] << " ms'" << LogLevel::INFO;
-            logger << "Temperature T='" << str_temperature << "*C'" << LogLevel::INFO;
-            logger << "Pressure P='" << str_pressure << "hPa'" << LogLevel::INFO;
-            logger << "Atltiude h='" << str_altitude << "m'" << LogLevel::INFO;
+        logger << "Telemetry from t='" << tv[0] << " ms'" << LogLevel::INFO;
+        logger << "Temperature T='" << str_temperature << "*C'" << LogLevel::INFO;
+        logger << "Pressure P='" << str_pressure << "hPa'" << LogLevel::INFO;
+        logger << "Atltiude h='" << str_altitude << "m'" << LogLevel::INFO;
 
-            fprintf(sensorsResult, "Telemetry from time t='%lld ms'\n", tv[0]);
-            fprintf(sensorsResult, "Temperature T='%f *C'\n", temperature);
-            fprintf(sensorsResult, "Pressure P='%f hPa'\n", pressure);
-            fprintf(sensorsResult, "Altitude h='%f m'\n", altitude);
-            fflush(sensorsResult);
+        fprintf(sensorsResult, "Telemetry from time t='%lld ms'\n", tv[0]);
+        fprintf(sensorsResult, "Temperature T='%f *C'\n", temperature);
+        fprintf(sensorsResult, "Pressure P='%f hPa'\n", pressure);
+        fprintf(sensorsResult, "Altitude h='%f m'\n", altitude);
+        fflush(sensorsResult);
 
-        parse(logger, data + 21, size - 21);
+        parse(socket, logger, data + 21, size - 21);
+
+        unsigned char buffer[13];
+        float* fbf = (float*) (buffer + 1);
+        buffer[0] = 0;
+        fbf[0] = temperature;
+        fbf[1] = pressure;
+        fbf[2] = altitude;
     }
 }
 
@@ -67,6 +74,6 @@ int main () {
         std::string str = target.read_string_from_core(&found);
         if (!found) continue ;
 
-        parse(logger, str.data(), str.size());
+        parse(sck, logger, str.data(), str.size());
     }
 }

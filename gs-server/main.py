@@ -20,6 +20,7 @@ async def handle_client_recv(reader, writer):
     request = None
     while request != 'quit':
         request = await reader.read(1)
+        if len(request) == 0: continue
         print(request)
         if writer.gss_client_uuid == -1:
             writer.gss_client_uuid = request[0]
@@ -38,6 +39,7 @@ async def handle_client_recv(reader, writer):
     writer.close()
 
 async def run_server():
+    print("Starting Socket Server")
     server = await asyncio.start_server(
         handle_client_recv,
         "172.20.10.7",
