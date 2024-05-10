@@ -5,6 +5,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include "gs-socket.h"
+
 const char* PATH_SENSORS__module_output = "/tmp/sensors-module-output";
 const char* PATH_SENSORS__module_input  = "/tmp/sensors-module-input";
 const char* PATH_SENSORS__logger        = "/tmp/sensors-module-logger";
@@ -46,14 +48,19 @@ int main () {
         PATH_SENSORS__logger
     );
     ModuleLogger logger (&target);
+    
+    socket_t sck(0);
 
     logger << "Successfully opened sensors logger" << LogLevel::SUCCESS;
-    std::string start_command = "START";
-    target.write_string_to_core(start_command);
 
     sensorsResult = fopen( PATH_SENSORS_result, "w" );
 
     while (1) {
+        std::string rcv = sck.recv();
+        if (rcv != "") {
+            logger << "Received command " << rcv << LogLevel::INFO;
+            continue ;
+        }
         bool found;
         std::string str = target.read_string_from_core(&found);
         if (!found) continue ;
