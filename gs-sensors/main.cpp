@@ -60,6 +60,7 @@ int main () {
         std::string rcv = sck.recv();
         if (rcv != "") {
             logger << "Received command " << rcv << LogLevel::INFO;
+            target.write_string_to_core(rcv);
             continue ;
         }
         bool found;
