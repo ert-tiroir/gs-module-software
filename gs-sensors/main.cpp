@@ -45,6 +45,7 @@ int main () {
             fprintf(sensorsResult, "Temperature T='%f *C'\n", temperature);
             fprintf(sensorsResult, "Pressure P='%f hPa'\n", pressure);
             fprintf(sensorsResult, "Altitude h='%f m'\n", altitude);
+            fflush(sensorsResult);
         }
     }
 }
