@@ -6,26 +6,25 @@ from websockets.server import serve
 clients = [ None, None ]
 sockets = []
 
-async def sock_recvall (loop, client, size):
+async def sock_recvall (reader, size):
     res = b""
     while len(res) < size:
-        res += await loop.sock_recv(client, size - len(res))
+        res += await reader.read(size - len(res))
 
     return res
-async def handle_client_recv(client):
-    print(client)
+async def handle_client_recv(reader, writer):
     loop = asyncio.get_event_loop()
 
     request = None
     while request != 'quit':
-        request = await loop.sock_recv(client, 1)
-        if client.gss_client_uuid == -1:
-            client.gss_client_uuid = request[0]
-
-            clients[client.gss_client_uuid] = client
-        elif client.gss_client_uuid == 0:  # SENSOR
+        request = await reader.read(1)
+        if writer.gss_client_uuid == -1:
+            writer.gss_client_uuid = request[0]
+            print("CLIENT UUID IS ", request[0])
+            clients[writer.gss_client_uuid] = writer
+        elif writer.gss_client_uuid == 0:  # SENSOR
             if request[0] == 0: # DPS310
-                values = await sock_recvall(loop, client, 12)
+                values = await sock_recvall(reader, 12)
                 temperature = struct.unpack( "!f", reversed(values[0:4]) )
                 pressure    = struct.unpack( "!f", reversed(values[4:8]) )
                 altitude    = struct.unpack( "!f", reversed(values[8:12]) )
@@ -33,12 +32,12 @@ async def handle_client_recv(client):
                 for socket in sockets:
                     loop.create_task( socket.send(f"DPS310: {temperature} {pressure} {altitude}\n") )
 
-    client.close()
+    writer.close()
 
 async def run_server():
     server = await asyncio.start_server(
         handle_client_recv,
-        "localhost",
+        "172.20.10.7",
         5042
     )
     async with server:

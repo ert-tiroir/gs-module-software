@@ -56,6 +56,7 @@ int main () {
     sensorsResult = fopen( PATH_SENSORS_result, "w" );
 
     while (1) {
+        sck.tick();
         std::string rcv = sck.recv();
         if (rcv != "") {
             logger << "Received command " << rcv << LogLevel::INFO;
