@@ -36,15 +36,18 @@ void parse (socket_t &socket, ModuleLogger &logger, char* data, int size) {
         fprintf(sensorsResult, "Pressure P='%f hPa'\n", pressure);
         fprintf(sensorsResult, "Altitude h='%f m'\n", altitude);
         fflush(sensorsResult);
-
-        parse(socket, logger, data + 21, size - 21);
-
+        
         unsigned char buffer[13];
         float* fbf = (float*) (buffer + 1);
         buffer[0] = 0;
         fbf[0] = temperature;
         fbf[1] = pressure;
         fbf[2] = altitude;
+        std::string cstr(13, '.');
+        for (int i = 0 ; i  < 13; i ++) cstr[i] = buffer[i];
+        socket.push(cstr);
+
+        parse(socket, logger, data + 21, size - 21);
     }
 }
 
