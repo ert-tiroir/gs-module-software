@@ -22,7 +22,10 @@ socket_t::socket_t (int module) {
         return ;
     }
 
-    if (inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_port = htons(PORT);
+
+    if (inet_pton(AF_INET, IP, &serv_addr.sin_addr)
         <= 0) {
         printf(
             "\nInvalid address/ Address not supported \n");
