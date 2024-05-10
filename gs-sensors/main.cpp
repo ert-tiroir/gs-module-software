@@ -48,6 +48,8 @@ int main () {
     ModuleLogger logger (&target);
 
     logger << "Successfully opened sensors logger" << LogLevel::SUCCESS;
+    std::string start_command = "START";
+    target.write_string_to_core(start_command);
 
     sensorsResult = fopen( PATH_SENSORS_result, "w" );
 
