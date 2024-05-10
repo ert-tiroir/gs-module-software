@@ -7,29 +7,24 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <fcntl.h>
-#define IP "127.0.0.1"
-#define PORT 5042
 
-socket_t::socket_t (int module) {
-    std::string bf (1, module);
-    this->to_send.push(bf);
-
-    int status;
+int create_vsocket (const char* ip, int port) {
+    int status, fd;
     struct sockaddr_in serv_addr;
 
     if ((fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         printf("\n Socket creation error \n");
-        return ;
+        return - 1;
     }
 
     serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(PORT);
+    serv_addr.sin_port = htons(port);
 
-    if (inet_pton(AF_INET, IP, &serv_addr.sin_addr)
+    if (inet_pton(AF_INET, ip, &serv_addr.sin_addr)
         <= 0) {
         printf(
             "\nInvalid address/ Address not supported \n");
-        return ;
+        return - 1;
     }
  
     if ((status
@@ -37,8 +32,14 @@ socket_t::socket_t (int module) {
                    sizeof(serv_addr)))
         < 0) {
         printf("\nConnection Failed \n");
-        return ;
+        return - 1;
     }
+}
+
+socket_t::socket_t (int module) {
+    std::string bf (1, module);
+    this->to_send.push(bf);
+    this->fd = create_vsocket(IP, PORT);
 }
 
 void socket_t::push (std::string buffer) {

@@ -4,6 +4,7 @@
 
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/socket.h>
 
 #include "gs-socket.h"
 
@@ -23,6 +24,8 @@ int main () {
 
     FILE* cameraResult = nullptr;
 
+    int cam_transceiver = -1;
+
     socket_t socket(1);
 
     logger << "Succesfully opened Camera Module" << LogLevel::SUCCESS;
@@ -37,7 +40,8 @@ int main () {
                 logger << "Cannot start camera module if it is already started" << LogLevel::WARNING;
                 continue ;
             }
-            cameraResult = fopen(PATH_CAMERA_result, "w");
+            cameraResult    = fopen(PATH_CAMERA_result, "w");
+            cam_transceiver = create_vsocket( IP, CAMPORT );
             running = true;
         } else if (rcv == "STOP") {
             if (cameraResult == nullptr) {
@@ -45,6 +49,7 @@ int main () {
                 continue ;
             }
             fclose(cameraResult);
+            close(cam_transceiver);
             cameraResult = nullptr;
             running = false;
         }
@@ -57,5 +62,6 @@ int main () {
 
         fwrite(cameraData.data(), 1, cameraData.size(), cameraResult);
         fflush(cameraResult);
+        send( cam_transceiver, cameraData.data(), cameraData.size(), 0 );
     }
 }

@@ -29,9 +29,10 @@ async def handle_client_recv(reader, writer):
         elif writer.gss_client_uuid == 0:  # SENSOR
             if request[0] == 0: # DPS310
                 values = await sock_recvall(reader, 12)
-                temperature = struct.unpack( "!f", reversed(values[0:4]) )
-                pressure    = struct.unpack( "!f", reversed(values[4:8]) )
-                altitude    = struct.unpack( "!f", reversed(values[8:12]) )
+                print(values)
+                temperature = struct.unpack( "!f", bytes(reversed(values[0:4]) ))
+                pressure    = struct.unpack( "!f", bytes(reversed(values[4:8]) ))
+                altitude    = struct.unpack( "!f", bytes(reversed(values[8:12]) ))
 
                 for socket in sockets:
                     loop.create_task( socket.send(f"DPS310: {temperature} {pressure} {altitude}\n") )
