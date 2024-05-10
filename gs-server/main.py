@@ -13,6 +13,7 @@ async def sock_recvall (loop, client, size):
 
     return res
 async def handle_client_recv(client):
+    print(client)
     loop = asyncio.get_event_loop()
 
     request = None
@@ -35,18 +36,13 @@ async def handle_client_recv(client):
     client.close()
 
 async def run_server():
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind(('localhost', 15555))
-    server.listen(8)
-    server.setblocking(False)
-
-    loop = asyncio.get_event_loop()
-
-    while True:
-        client, _ = await loop.sock_accept(server)
-        client.gss_client_uuid = - 1
-
-        loop.create_task(handle_client_recv(client))
+    server = await asyncio.start_server(
+        handle_client_recv,
+        "localhost",
+        5042
+    )
+    async with server:
+        await server.serve_forever()
 
 async def handle_websocket (ws):
     loop = asyncio.get_event_loop()
@@ -77,7 +73,7 @@ async def run ():
     loop = asyncio.get_event_loop()
 
     print("Hello")
-    loop.create_task(run_server_socket())
+    #loop.create_task(run_server_socket())
     loop.create_task(run_server())
 
     await asyncio.Future()

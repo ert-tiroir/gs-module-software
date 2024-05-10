@@ -7,14 +7,14 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <fcntl.h>
-#define IP "172.20.10.7"
-#define PORT 15555
+#define IP "127.0.0.1"
+#define PORT 5042
 
 socket_t::socket_t (int module) {
     std::string bf (1, module);
     this->to_send.push(bf);
 
-    int status, valread, client_fd;
+    int status;
     struct sockaddr_in serv_addr;
 
     if ((fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -33,7 +33,7 @@ socket_t::socket_t (int module) {
     }
  
     if ((status
-         = connect(client_fd, (struct sockaddr*)&serv_addr,
+         = connect(fd, (struct sockaddr*)&serv_addr,
                    sizeof(serv_addr)))
         < 0) {
         printf("\nConnection Failed \n");
